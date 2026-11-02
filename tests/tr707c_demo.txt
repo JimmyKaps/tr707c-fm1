@@ -1,0 +1,54 @@
+# TR-707C host test: panel, MIDI (a KeyStep-style controller) and the 64-bar sequencer.
+500 shot
+600 btn 12
+# STEP mode: select snare (encoder 0 +1), page to bar 2 (enc 1), tap three white keys, then back to bar 1
+2000 enc 0 1
+2100 enc 1 1
+2200 keys 1
+2300 keys 0
+2400 keys 0x10
+2500 keys 0
+2600 keys 0x400
+2700 keys 0
+2900 shot
+# loop length of the snare 1 -> 64 (PRESETS +63): 64-bar track
+3000 enc 6 63
+3100 shot
+# MIDI notes: chromatic 36..48, GM on channel 10, velocity -> accent
+3500 midi 0x90 39 100
+3600 midi 0x99 42 127
+3700 midi 0x99 46 60
+# CC banks: level BD(20), tune BD(40), decay BD(60), tempo(14), swing(1), accent(15), master(7)
+4000 midi 0xB0 20 127
+4010 midi 0xB0 40 80
+4020 midi 0xB0 60 110
+4030 midi 0xB0 14 90
+4040 midi 0xB0 1 60
+4050 midi 0xB0 15 100
+4060 midi 0xB0 7 110
+# CC 80 select instrument 5 (RIM), CC 82 loop length 4 bars, CC 85 mute then unmute
+4200 midi 0xB0 80 50
+4210 midi 0xB0 82 6
+4220 midi 0xB0 85 127
+4400 midi 0xB0 85 0
+# live record: arm (btn 13), play kick (note 36) and clap (note 42) while running, disarm
+4600 btn 13
+4700 midi 0x90 36 127
+4950 midi 0x90 42 100
+5200 midi 0x90 44 100
+5800 btn 13
+6000 shot
+# transport: stop, switch to external clock (btn 5), MIDI start + 24 clocks at 120 BPM
+6200 btn 12
+6400 btn 5
+6500 midi 0xFA 0 0
+6500 clock 120 96
+9000 midi 0xFC 0 0
+9100 shot
+# GM channel-10 notes, all sound off, save (btn 9) and load (btn 8)
+9200 btn 5
+9300 midi 0xB0 123 0
+9400 btn 9
+10500 btn 8
+11500 shot
+12000 end
