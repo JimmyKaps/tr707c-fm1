@@ -1,4 +1,3 @@
-# Build TR-707C on GitHub: Actions tab > "tr707c" > Run workflow. The package is attached to the run as "tr707c-fwsc".
 name: tr707c
 on:
   workflow_dispatch:
@@ -22,6 +21,12 @@ jobs:
             sleep 20
           done
           test -d ~/fw-AC79_AIoT_SDK
+      - name: Show which tr707c.c files exist
+        run: |
+          find . -name 'tr707c.c' -not -path './.git/*' -exec ls -l {} \;
+          grep -n 'rng' firmware/src/tr707c.c || echo "no rng in firmware/src/tr707c.c"
+      - name: Fix the rng name clash
+        run: sed -i 's/\brng\b/nz_state/g' firmware/src/tr707c.c
       - name: Host test (no hardware)
         run: sh tests/run_host_tr707c.sh tests/tr707c_demo.txt
       - name: Build
