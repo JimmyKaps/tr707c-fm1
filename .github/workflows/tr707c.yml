@@ -1,1 +1,33 @@
-
+# Build TR-707C on GitHub: Actions tab > "tr707c" > Run workflow. The package is attached to the run as "tr707c-fwsc".
+name: tr707c
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python3 -m pip install Pillow
+      - name: JieLi toolchain
+        run: sh tools/get_toolchain.sh
+      - name: JieLi AC79 SDK
+        run: |
+          for i in 1 2 3; do
+            git clone --depth 1 --branch AC79NN_SDK_V1.2.1_2023-12-13 \
+                https://gitee.com/Jieli-Tech/fw-AC79_AIoT_SDK.git ~/fw-AC79_AIoT_SDK && break
+            rm -rf ~/fw-AC79_AIoT_SDK
+            sleep 20
+          done
+          test -d ~/fw-AC79_AIoT_SDK
+      - name: Host test (no hardware)
+        run: sh tests/run_host_tr707c.sh tests/tr707c_demo.txt
+      - name: Build
+        run: sh build.sh --app tr707c
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tr707c-fwsc
+          path: build/tr707c.fwsc
+          if-no-files-found: error
